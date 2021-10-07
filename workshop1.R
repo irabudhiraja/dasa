@@ -7,7 +7,7 @@ library(stringr)
 install.packages("janitor")
 library(janitor)
 
-# we are using starwards dataset to understand the code
+# we are using starwars dataset to understand the code
 
 view(starwars)
 
