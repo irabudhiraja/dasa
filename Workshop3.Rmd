@@ -1,0 +1,125 @@
+---
+title: "Tidyverse DASA"
+author: "Ira Budhiraja"
+date: "21/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(skimr)
+library(tidyverse)
+
+```
+
+
+# dataset
+
+```{r}
+tweets<-read.csv("assessment2_19_10_2021.csv")
+
+plastics <-read.csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-26/plastics.csv')
+
+
+
+```
+
+#Rename a variable
+
+```{r}
+plastics <- plastics %>% rename(other = o)
+
+```
+
+#Count total countries
+
+```{r}
+country <- plastics%>%
+  group_by(year)%>%
+  count(country)
+
+company<- plastics%>%
+  group_by(year)%>%
+  count(parent_company)
+```
+
+#data visualisation
+
+```{r}
+
+# we use ggplot2 library to produce graphs
+
+country%>%
+  ggplot(aes(country, n))+
+  geom_point()
+
+```
+
+
+```{r}
+plastics$year <- as.factor(plastics$year)
+
+skim(plastics)
+
+
+```
+
+
+```{r}
+plastics %>%
+  ggplot(aes(year, grand_total))+
+  geom_boxplot()+
+  scale_y_log10()
+
+```
+
+#volunteer
+
+```{r}
+volunteer<-plastics%>%
+  group_by(year, country)%>%
+  distinct(year, country, volunteers)
+```
+
+
+```{r}
+volunteer%>%
+  ggplot(aes(country, volunteers))+
+  geom_point()
+
+```
+
+
+
+```{r}
+volunteer_by_year<-volunteer%>%
+  pivot_wider(names_from = year, values_from = volunteers)
+
+volunteer_by_year <- rename(volunteer_by_year, yr2019 = "2019")
+
+volunteer_by_year <- rename(volunteer_by_year, yr2020 = "2020")
+
+```
+
+#countries that participate each year
+
+```{r}
+volunteers_participants <- volunteer_by_year%>%
+  filter(is.na(yr2019)|is.na(yr2020))
+
+```
+
+
+
+```{r}
+volunteers_participants %>%
+  ggplot(aes(country, yr2019))+
+  geom_point()+
+  coord_flip()+
+  labs(y = "Year 2019",x = "Countries")+
+  theme_minimal()
+
+
+```
+
